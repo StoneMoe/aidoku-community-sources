@@ -1,0 +1,10 @@
+{
+	"info": {
+		"id": "zh.manhuagui",
+		"lang": "zh",
+		"name": "漫画柜",
+		"version": 1,
+		"url": "https://m.manhuagui.com",
+		"nsfw": 1
+	}
+}
