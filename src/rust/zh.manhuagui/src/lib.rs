@@ -5,16 +5,16 @@
 extern crate alloc;
 
 use crate::consts::BASE_URL;
+use crate::helper::{fetch_chapter_list, fetch_manga_detail};
 use crate::parser::manga_list;
 use aidoku::std::html::Node;
 use aidoku::{
 	error::Result,
 	prelude::*,
-    std::net::Request,
-    std::{String, Vec},
+	std::net::Request,
+	std::{String, Vec},
 	Chapter, DeepLink, Filter, Manga, MangaPageResult, Page,
 };
-
 
 mod consts;
 mod helper;
@@ -32,111 +32,12 @@ pub fn get_manga_list(filters: Vec<Filter>, page: i32) -> Result<MangaPageResult
 
 #[get_manga_details]
 fn get_manga_details(id: String) -> Result<Manga> {
-	todo!()
-	// let url = format!(
-	//     "{}/comic/detail/{}?channel=android&version=3.0.0&timestamp={}",
-	//     V4_API_URL,
-	//     &id,
-	//     aidoku::std::current_date() as i64
-	// );
-	// let data = None;
-	// return Ok(Manga {
-	//     id: id.clone(),
-	//     cover: data.cover,
-	//     title: data.title,
-	//     author: data
-	//         .authors
-	//         .iter()
-	//         .map(|s| s.tag_name.clone())
-	//         .collect::<Vec<String>>()
-	//         .join(", "),
-	//     artist: String::new(),
-	//     description: data.description,
-	//     url: format!("{}/info/{}.html", BASE_URL, id),
-	//     categories: data.types.iter().map(|s| s.tag_name.clone()).collect(),
-	//     status: match data.status[0].tag_name.as_str() {
-	//         "连载中" => MangaStatus::Ongoing,
-	//         "已完结" => MangaStatus::Completed,
-	//         _ => MangaStatus::Unknown,
-	//     },
-	//     nsfw: MangaContentRating::Safe,
-	//     viewer: match data.direction {
-	//         0 => MangaViewer::Rtl, // Maybe? Can't find evidence.
-	//         1 => MangaViewer::Ltr,
-	//         2 => MangaViewer::Scroll,
-	//         _ => MangaViewer::Default,
-	//     },
-	// });
+	fetch_manga_detail(id)
 }
 
 #[get_chapter_list]
 fn get_chapter_list(id: String) -> Result<Vec<Chapter>> {
-	todo!()
-	// let url = format!(
-	//     "{}/comic/detail/{}?channel=android&version=3.0.0&timestamp={}",
-	//     V4_API_URL,
-	//     &id,
-	//     aidoku::std::current_date() as i64
-	// );
-	//
-	// let pb = helper::decode(&helper::get(&url).string());
-	//
-	// let mut chapters = Vec::new();
-	//
-	// if pb.errno == 0 && !pb.data.as_ref().unwrap().chapters.is_empty() {
-	//     let pb_data = pb.data.unwrap();
-	//     let mut volume = 0;
-	//     let has_multi_chapter = pb_data.chapters.len() >= 2;
-	//     for chapter_list in pb_data.chapters {
-	//         volume += 1;
-	//         let len = chapter_list.data.len();
-	//         for (index, chapter) in chapter_list.data.into_iter().enumerate()
-	// {             chapters.push(Chapter {
-	//                 id: format!("{}/{}", pb_data.id, chapter.chapter_id),
-	//                 title: format!("{}: {}", chapter_list.title,
-	// chapter.chapter_title),                 volume: if has_multi_chapter {
-	//                     volume as f32
-	//                 } else {
-	//                     -1.0
-	//                 },
-	//                 chapter: (len - index) as f32,
-	//                 date_updated: chapter.updatetime as f64,
-	//                 scanlator: String::new(),
-	//                 url: String::new(),
-	//                 lang: String::from("zh"),
-	//             });
-	//         }
-	//     }
-	// } else {
-	//     let url = format!("{}/dynamic/comicinfo/{}.json", API_URL, id);
-	//     let req = helper::get(&url);
-	//
-	//     let list = req
-	//         .json()
-	//         .as_object()?
-	//         .get("data")
-	//         .as_object()?
-	//         .get("list")
-	//         .clone()
-	//         .as_array()?;
-	//
-	//     let len = list.len();
-	//     for (index, chapter) in list.enumerate() {
-	//         let data = chapter.as_object()?;
-	//
-	//         chapters.push(Chapter {
-	//             id: format!("{}/{}", id, data.get("id").as_string()?.read()),
-	//             title: data.get("chapter_name").as_string()?.read(),
-	//             volume: -1.0,
-	//             chapter: (len - index) as f32,
-	//             date_updated: data.get("updatetime").as_int()? as f64,
-	//             scanlator: String::new(),
-	//             url: String::new(),
-	//             lang: String::from("zh"),
-	//         });
-	//     }
-	// }
-	// Ok(chapters)
+	fetch_chapter_list(id)
 }
 
 #[get_page_list]
@@ -229,14 +130,8 @@ fn get_page_list(id: String) -> Result<Vec<Page>> {
 	// Ok(pages)
 }
 
-// Doesn't work
 #[modify_image_request]
-fn modify_image_request(request: Request) {
-	request
-        .header("Referer", &*format!("{}/", BASE_URL))
-        .header("User-Agent",
-                "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.93 Mobile Safari/537.36 Aidoku/1.0");
-}
+fn modify_image_request(request: Request) {}
 
 #[handle_url]
 pub fn handle_url(url: String) -> Result<DeepLink> {

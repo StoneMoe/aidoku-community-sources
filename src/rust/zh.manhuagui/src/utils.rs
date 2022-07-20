@@ -1,6 +1,6 @@
+use aidoku::std::net::{HttpMethod, Request};
 use alloc::string::String;
 use alloc::vec::Vec;
-use aidoku::std::net::{HttpMethod, Request};
 
 pub fn encode_uri(string: &String) -> String {
 	let mut result: Vec<u8> = Vec::with_capacity(string.len() * 3);
@@ -60,7 +60,8 @@ fn i32_to_string(mut integer: i32) -> String {
 
 pub fn get(url: &str) -> Request {
 	Request::new(url, HttpMethod::Get)
-        .header("Referer", "https://tw.manhuagui.com/")
+        .header("Referer", "https://www.manhuagui.com/")
         .header("User-Agent",
-                "Mozilla/5.0 (Linux; Android 10) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.93 Mobile Safari/537.36 Aidoku/1.0")
+                "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.0.0 Safari/537.36 Aidoku/1.0")
+        .header("Cookie", "country=HK; isAdult=1")
 }

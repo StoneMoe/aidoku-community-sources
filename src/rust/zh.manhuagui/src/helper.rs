@@ -1,11 +1,10 @@
 use aidoku::prelude::*;
-use aidoku::{
-	error::Result, std::String, std::Vec, Filter,
-	FilterType,
-};
+use aidoku::{error::Result, std::String, std::Vec, Chapter, Filter, FilterType, Manga};
 use alloc::string::ToString;
 
 use crate::consts::*;
+use crate::parser::{manga_chapters, manga_detail};
+use crate::utils::get;
 use crate::{manga_list, utils};
 
 pub fn fetch_manga_list(filters: Vec<Filter>, page: i32) -> Result<manga_list::Resp> {
@@ -54,7 +53,7 @@ pub fn fetch_manga_list(filters: Vec<Filter>, page: i32) -> Result<manga_list::R
 			&utils::encode_uri(&query),
 			page
 		);
-		println!("[zh-manhuagui]search fetching: {}", url);
+		println!("[manhuagui]search fetching: {}", url);
 		manga_list::parse(utils::get(&url).html(), manga_list::ParseMode::Search)
 	} else {
 		// Example: https://www.manhuagui.com/list/japan_maoxian_qingnian_2020_b/update_p1.html
@@ -71,7 +70,18 @@ pub fn fetch_manga_list(filters: Vec<Filter>, page: i32) -> Result<manga_list::R
 			},
 			page
 		);
-		println!("[zh-manhuagui]filter fetching: {}", url);
+		println!("[manhuagui]filter fetching: {}", url);
 		manga_list::parse(utils::get(&url).html(), manga_list::ParseMode::Filtered)
 	};
+}
+
+pub fn fetch_manga_detail(id: String) -> Result<Manga> {
+	let url = format!("{}/comic/{}/", BASE_URL, id);
+	let html = get(&url).html();
+	manga_detail::parse(id, url, html)
+}
+pub fn fetch_chapter_list(id: String) -> Result<Vec<Chapter>> {
+	let url = format!("{}/comic/{}/", BASE_URL, id);
+	let html = get(&url).html();
+	manga_chapters::parse(id, url, html)
 }

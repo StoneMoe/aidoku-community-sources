@@ -23,10 +23,13 @@ pub fn parse(html: Node, mode: ParseMode) -> Result<Resp> {
 		ParseMode::Search => {
 			let node = html.select("div.book-result > ul > li");
 			let elems = node.array(); // workaround: new var to avoid value dropping
-			println!("[zh-manhuagui]found {} manga(s)", elems.len());
+			println!("[manhuagui]found {} manga(s)", elems.len());
+
 			for elem in elems {
 				manga_arr.push(parse_list_elem(elem.as_node()));
 			}
+			println!("[manhuagui]loaded {} manga(s)", manga_arr.len());
+
 			has_more = manga_arr.len() >= 10;
 			Ok(Resp {
 				mangas: manga_arr,
@@ -36,11 +39,11 @@ pub fn parse(html: Node, mode: ParseMode) -> Result<Resp> {
 		ParseMode::Filtered => {
 			let node = html.select("ul#contList > li");
 			let elems = node.array(); // workaround: new var to avoid value dropping
-			println!("[zh-manhuagui]found {} manga(s)", elems.len());
 			for elem in elems {
 				let node = elem.as_node();
 				manga_arr.push(parse_list_elem(node));
 			}
+			println!("[manhuagui]loaded {} manga(s)", manga_arr.len());
 			has_more = manga_arr.len() >= 42;
 			Ok(Resp {
 				mangas: manga_arr,
@@ -66,9 +69,9 @@ fn parse_list_elem(elem: Node) -> Manga {
 			let cover_elem = elem.select("img");
 			let cover_elem = cover_elem.first(); // workaround: chaining calls cause cancer
 			if cover_elem.has_attr("src") {
-                cover_elem.attr("abs:src").read()
+				cover_elem.attr("abs:src").read()
 			} else {
-                cover_elem.attr("abs:data-src").read()
+				cover_elem.attr("abs:data-src").read()
 			}
 		},
 		title: elem.attr("title").read().trim().to_string(),
@@ -79,8 +82,7 @@ fn parse_list_elem(elem: Node) -> Manga {
 		categories: Vec::new(),
 		status: MangaStatus::Unknown,
 		nsfw: MangaContentRating::Safe,
-		viewer: MangaViewer::Rtl,
+		viewer: MangaViewer::Default,
 	};
-	println!("[zh-manhuagui][{}]{}:{}", m.id.to_string(), m.title, m.cover);
 	return m;
 }
